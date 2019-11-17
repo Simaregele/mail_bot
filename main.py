@@ -5,20 +5,37 @@ import bs4
 bsoup = bs4.BeautifulSoup
 import config
 
+# логика элементов td mother_class > table_class > main_class > table > tr > 2-d td
+
+mother_class = "e4fcf49d339e49e54d8e4094ff5b6c35content-cell"
+table_class = "e87955b57e36bb84a36d9833e3cb5c27attributes"
+main_class = "172dd1c6341983508c65d5aa419917f8attributes_content"
+element_class = "7c3f8f7bc09d253c9189b3ec2e244faeattributes_item"
+
+
+def find_all(soup):
+    element = soup.find('table')
+    td_tr = element.tbody.tr.td.text
+    print(td_tr)
+
+    # for element in soup.find_all('td', class_=element_class):
+    #     print(element.text)
+
 
 # Ссылки
 # https://yandex.ru/support/mail/mail-clients.html  - инфа яндекса
 # https://eax.me/python-imap/ -  статья про почту
 # Видос хороший https://www.youtube.com/watch?v=bbPwv0TP2UQ
 # Второй видос https://www.youtube.com/watch?v=Jt8LizzxkPU
+# https://www.youtube.com/watch?v=ng2o98k983k  про BS
 
 #подкоючаемся к серверу почты и логинимся
 mail = imaplib.IMAP4_SSL('imap.yandex.ru')
 mail.login(config.login, config.password)
 
 
-#берем то что у нас в ящике
-mail.select('INBOX')
+#берем то что у нас в папке, в данном случае выбираю папку Quiz
+mail.select('Quiz')
 
 # это выподит письма в инбоксе
 # mail.list()
@@ -61,17 +78,18 @@ for item in inbox_item_list:
             counter += 1
             # save file
             content_type = part.get_content_type()
-            print(subject_)
-            print(content_type)
+            # print(subject_)
+            # print(content_type)
             if "plain" in content_type:
                 # print(part.get_payload())
                 pass
             elif "html" in content_type:
                 html_ = part.get_payload()
                 soup = bsoup(html_, "html.parser")
-                text = soup.get_text()
-                print(text)
-                print(subject_)
+                # text = soup.get_text()
+                # print(soup.prettify())
+                # print(subject_)
+                find_all(soup)
 
             else:
                 # print(content_type)
